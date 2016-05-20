@@ -55,7 +55,7 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->redirect('http://admin.news.loc/index.php?r=news%2Findex');
     }
 
     public function actionLogin()
