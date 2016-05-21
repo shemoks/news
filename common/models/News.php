@@ -5,6 +5,7 @@ namespace common\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "news".
@@ -34,7 +35,12 @@ class News extends ActiveRecord
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            [
+                'class' => TimestampBehavior::className(),
+                'value' => function () {
+                    return date('Y-m-d H:i:s');
+                }
+            ],
         ];
     }
 
@@ -43,7 +49,7 @@ class News extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%news}}';
+        return 'news';
     }
 
     /**
@@ -52,12 +58,12 @@ class News extends ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'date_begin', 'date_end', 'created_at', 'updated_at','place','latitude','longitude'], 'required'],
+            [['title', 'date_begin', 'date_end','place'/*'latitude','longitude'*/], 'required'],
             [['description'], 'string'],
-            [['date_begin', 'date_end','place','latitude','longitude'], 'safe'],
+            [['date_begin', 'date_end', 'place', 'latitude', 'longitude', 'created_at', 'updated_at'], 'safe'],
             ['date_end', 'compare', 'compareAttribute' => 'date_begin', 'operator' => '>', 'message' => 'False dates'],
-            [['is_deleted', 'id_user','latitude','longitude'], 'integer'],
-            [['title','place'], 'string', 'max' => 255],
+            [['is_deleted', 'id_user', 'latitude', 'longitude'], 'integer'],
+            [['title', 'place'], 'string', 'max' => 255],
             [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['id_user' => 'id']],
         ];
     }

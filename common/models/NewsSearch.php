@@ -19,7 +19,7 @@ class NewsSearch extends News
     {
         return [
             [['id', 'is_deleted', 'id_user', 'latitude', 'longitude'], 'integer'],
-            [['title', 'description', 'date_begin', 'date_end', 'place'], 'safe'],
+            [['title', 'description', 'date_begin', 'date_end','place','latitude', 'longitude','created_at', 'updated_at',], 'safe'],
         ];
     }
 

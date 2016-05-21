@@ -22,7 +22,7 @@ class NewsController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -40,7 +40,7 @@ class NewsController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
+            'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -65,8 +65,10 @@ class NewsController extends Controller
     public function actionCreate()
     {
         $model = new News();
-        $model->id_user=Yii::$app->user->identity->getId();
+       $model->place=Yii::$app->request->post('#us2-address');
+        $model->id_user = Yii::$app->user->identity->getId();
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+//           var_dump($model);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [

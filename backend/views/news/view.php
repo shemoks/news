@@ -39,5 +39,5 @@ $this->params['breadcrumbs'][] = $this->title;
             'date_end',
         ],
     ]) ?>
-
+    <div id="map"></div>
 </div>
