@@ -28,6 +28,25 @@ use yii\db\Expression;
 class News extends ActiveRecord
 {
     const STATUS_DELETED = 1;
+    const STATUS_ACTIVE = 0;
+
+    public static $coordinates;
+
+    /**
+     * @param array $coordinates
+     */
+    public static function setCoordinates($coordinates)
+    {
+        self::$coordinates[] = $coordinates;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getCoordinates()
+    {
+        return self::$coordinates;
+    }
 
     /**
      * @inheritdoc
@@ -58,13 +77,15 @@ class News extends ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'date_begin', 'date_end','place'/*'latitude','longitude'*/], 'required'],
+            [['title', 'date_begin', 'date_end', 'place'], 'required'],
             [['description'], 'string'],
             [['date_begin', 'date_end', 'place', 'latitude', 'longitude', 'created_at', 'updated_at'], 'safe'],
             ['date_end', 'compare', 'compareAttribute' => 'date_begin', 'operator' => '>', 'message' => 'False dates'],
-            [['is_deleted', 'id_user', 'latitude', 'longitude'], 'integer'],
-            [['title', 'place'], 'string', 'max' => 255],
-            [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['id_user' => 'id']],
+            [['is_deleted', 'id_user'], 'integer'],
+            [['title', 'place', 'latitude', 'longitude'], 'string', 'max' => 255],
+            [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => [
+                'id_user' => 'id'
+            ]],
         ];
     }
 

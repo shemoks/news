@@ -19,7 +19,7 @@ class NewsSearch extends News
     {
         return [
             [['id', 'is_deleted', 'id_user', 'latitude', 'longitude'], 'integer'],
-            [['title', 'description', 'date_begin', 'date_end','place','latitude', 'longitude','created_at', 'updated_at',], 'safe'],
+            [['title', 'description', 'date_begin', 'date_end', 'place', 'latitude', 'longitude', 'created_at', 'updated_at',], 'safe'],
         ];
     }
 
@@ -42,8 +42,7 @@ class NewsSearch extends News
     public function search($params)
     {
         $query = News::find();
-
-        // add conditions that should always apply here
+        $query->andWhere(['is_deleted' => self::STATUS_ACTIVE]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -52,8 +51,6 @@ class NewsSearch extends News
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
 

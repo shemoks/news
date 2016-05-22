@@ -1,5 +1,7 @@
 <?php
 
+use common\models\News;
+use common\widgets\googleMap\GoogleMapWidget;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -20,21 +22,40 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
+        'filterModel'  => $searchModel,
+        'columns'      => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+//            'id',
             'title',
             'description:ntext',
-            'created_at',
-            'updated_at',
+//            'created_at',
+//            'updated_at',
             // 'is_deleted',
-            // 'id_user',
-            // 'date_begin',
-            // 'date_end',
+            [
+                'attribute' => 'id_user',
+                'format'    => 'raw',
+                'value'     => function ($model) {
+                    $model::setCoordinates([
+                        'lat' => $model->latitude,
+                        'lan' => $model->longitude
+                    ]);
+                    return $model->idUser->username;
+                }
+            ],
+            'date_begin',
+            'date_end',
+            'place',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 </div>
+
+<?= GoogleMapWidget::widget([
+        'key'               => Yii::$app->params['googleApiKey'],
+        'coordinates'       => News::getCoordinates(),
+        'isGetUserLocation' => false,
+        'mapCenter' => false,
+    ]
+); ?>

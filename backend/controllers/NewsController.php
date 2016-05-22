@@ -16,21 +16,6 @@ use yii\filters\VerbFilter;
 class NewsController extends Controller
 {
     /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class'   => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
-
-    /**
      * Lists all News models.
      * @return mixed
      */
@@ -65,7 +50,6 @@ class NewsController extends Controller
     public function actionCreate()
     {
         $model = new News();
-       $model->place=Yii::$app->request->post('#us2-address');
         $model->id_user = Yii::$app->user->identity->getId();
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 //           var_dump($model);
@@ -104,7 +88,9 @@ class NewsController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $model->is_deleted = News::STATUS_DELETED;
+        $model->save();
 
         return $this->redirect(['index']);
     }

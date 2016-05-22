@@ -1,5 +1,6 @@
 <?php
 
+use common\widgets\googleMap\GoogleMapWidget;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -18,26 +19,38 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
-            'data' => [
+            'data'  => [
                 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
+                'method'  => 'post',
             ],
         ]) ?>
     </p>
 
     <?= DetailView::widget([
-        'model' => $model,
+        'model'      => $model,
         'attributes' => [
-            'id',
+            //     'id',
             'title',
             'description:ntext',
             'created_at',
             'updated_at',
-            'is_deleted',
-            'id_user',
+            //  'is_deleted',
+            //  'id_user',
             'date_begin',
             'date_end',
         ],
     ]) ?>
-    <div id="map"></div>
+
+    <?= GoogleMapWidget::widget([
+            'key'               => Yii::$app->params['googleApiKey'],
+            'isGetUserLocation' => false,
+            'coordinates'       => [
+                [
+                    'lat' => $model->latitude,
+                    'lan' => $model->longitude,
+                ]
+            ],
+            'mapCenter' => true,
+        ]
+    ); ?>
 </div>

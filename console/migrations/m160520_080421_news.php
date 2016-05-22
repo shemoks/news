@@ -31,15 +31,4 @@ class m160520_080421_news extends Migration
     {
         $this->dropTable('news');
     }
-
-    /*
-    // Use safeUp/safeDown to run migration code within a transaction
-    public function safeUp()
-    {
-    }
-
-    public function safeDown()
-    {
-    }
-    */
 }
