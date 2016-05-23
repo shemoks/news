@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $model::setCoordinates([
                     'lat'   => $model->latitude,
                     'lan'   => $model->longitude,
-                    'title' => $model->title,
+                    'title' => nl2br($model->title."\n\r"."lat:".$model->latitude."\n\r"."long:".$model->longitude),
                 ]);
                 return $model->idUser->username;
             }
