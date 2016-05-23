@@ -39,7 +39,6 @@ use yii\widgets\ActiveForm;
     $options['key'] = Yii::$app->params['googleApiKey'];
     $options['isDraggableMarker'] = true;
     $options['isGetUserLocation'] = $model->isNewRecord;
-    $options['mapCenter'] = !$model->isNewRecord;
     $options['placeId'] = 'news-place';
     $options['latId'] = 'news-latitude';
     $options['langId'] = 'news-longitude';

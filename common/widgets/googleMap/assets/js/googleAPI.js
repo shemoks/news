@@ -21,46 +21,54 @@ $(function () {
         placeId = options.placeId;
         mapZoom = options.mapZoom;
         isGetUserLocation = options.isGetUserLocation;
-        mapCenter = options.mapCenter;
     };
 
     google.maps.event.addDomListener(window, 'load', initMap);
     function initMap() {
-        var lastCoordinates = coordinates && coordinates.length ? coordinates[coordinates.length-1] : {
+        var lastCoordinates = coordinates && coordinates.length ? coordinates[coordinates.length - 1] : {
             lat: 49.4285400,
             lan: 32.0620700
         };
-        map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById(mapId), {
             center: {lat: parseFloat(lastCoordinates.lat), lng: parseFloat(lastCoordinates.lan)},
             zoom: mapZoom
         });
+        autocomplete = new google.maps.places.Autocomplete(document.getElementById(placeId), {
+            types: ['establishment']
+        });
+        infoWindow = new google.maps.InfoWindow();
         if (coordinates) {
             coordinates.forEach(function (item) {
-                marker = new google.maps.Marker({
-                    map: map,
-                    draggable: isDraggableMarker,
-                    animation: google.maps.Animation.DROP,
-                    position: {lat: parseFloat(item.lat), lng: parseFloat(item.lan)},
-                    title: isDraggableMarker ? "Drag me!" : null
-                });
+                addMarker({lat: parseFloat(item.lat), lng: parseFloat(item.lan)}, item.title);
             });
         } else {
-            marker = new google.maps.Marker({
-                map: map,
-                draggable: isDraggableMarker,
-                animation: google.maps.Animation.DROP,
-                position: {lat: parseFloat(lastCoordinates.lat), lng: parseFloat(lastCoordinates.lan)},
-                title: isDraggableMarker ? "Drag me!" : null
-            });
+            addMarker({lat: parseFloat(lastCoordinates.lat), lng: parseFloat(lastCoordinates.lan)});
         }
         marker.addListener('click', toggleBounce());
+        geocoder = new google.maps.Geocoder();
         Geodolocation();
         AddEvents();
     }
 });
 
+function addMarker(position, title) {
+    marker = new google.maps.Marker({
+        map: map,
+        draggable: isDraggableMarker,
+        animation: google.maps.Animation.DROP,
+        position: position,
+        title: isDraggableMarker ? "Drag me!" : null
+    });
+    if (typeof title != 'undefined') {
+        marker.addListener('click', function (evt) {
+            infoWindow.setPosition(evt.latLng);
+            infoWindow.setContent(title);
+            infoWindow.open(map);
+        });
+    }
+}
+
 function Geodolocation() {
-    geocoder = new google.maps.Geocoder();
     google.maps.event.addListener(marker, 'dragend', function (evt) {
         map.setCenter(marker.position);
         geocoder.geocode({'latLng': evt.latLng}, function (data, status) {
@@ -71,6 +79,7 @@ function Geodolocation() {
             }
         })
     });
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
             if (isGetUserLocation) {
@@ -98,42 +107,21 @@ function toggleBounce() {
     } else {
         marker.setAnimation(google.maps.Animation.BOUNCE);
     }
-
 }
+
 function AddEvents() {
-    $(document).on('focusout', '#' + placeId, function (evt) {
-        var address = ('#' + placeId).value;
+    $(document).on('focusout', '#' + placeId, function () {
+        var address = $('#' + placeId).val();
         geocoder.geocode({'address': address}, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-                map.setCenter(results[0].geometry.location);
-                marker.setPosition(results[0].geometry.location);
-                $('#' + latId).value = evt.latLng.lat();
-                $('#' + langId).value = evt.latLng.lng();
+                var location = results[0].geometry.location;
+                map.setCenter(location);
+                marker.setPosition(location);
+                $('#' + latId).val(location.lat());
+                $('#' + langId).val(location.lng());
             } else {
                 alert("Geocode was not successful for the following reason: " + status);
             }
         });
     });
 }
-
-//// Sets the map on all markers in the array.
-//function setMapOnAll(map) {
-//    for (var i = 1; i < markers.length; i++) {
-//        markers[i].setMap(map);
-//    }
-//}
-//// Removes the markers from the map, but keeps them in the array.
-//function clearMarkers() {
-//    setMapOnAll(null);
-//}
-//
-//// Shows any markers currently in the array.
-//function showMarkers() {
-//    setMapOnAll(map);
-//}
-//
-//// Deletes all markers in the array by removing references to them.
-//function deleteMarkers() {
-//    clearMarkers();
-//    // markers = [];
-//}

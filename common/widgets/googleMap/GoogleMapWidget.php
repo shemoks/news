@@ -18,7 +18,6 @@ class GoogleMapWidget extends Widget
     public $latId;
     public $langId;
     public $mapZoom = 15;
-    public $mapCenter = false;
 
     public function init()
     {
@@ -26,7 +25,8 @@ class GoogleMapWidget extends Widget
         $this->options['id'] = !is_null($this->id) ? $this->id : 'map';
         $url = "//maps.googleapis.com/maps/api/js?" . http_build_query([
                 'key'       => $this->key,
-                'signed_in' => true
+                'signed_in' => true,
+                'libraries' => 'places'
             ]);
         $this->view->registerJsFile($url, [
             'position' => View::POS_END
@@ -45,7 +45,6 @@ class GoogleMapWidget extends Widget
             'langId'            => $this->langId,
             'mapZoom'           => $this->mapZoom,
             'isGetUserLocation' => $this->isGetUserLocation,
-            'mapCenter'         => $this->mapCenter
         ]);
         $js = "$().googleMap($options);";
         $this->getView()->registerJs($js);

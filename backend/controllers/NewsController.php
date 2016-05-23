@@ -6,6 +6,7 @@ use common\models\User;
 use Yii;
 use common\models\News;
 use common\models\NewsSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -15,6 +16,28 @@ use yii\filters\VerbFilter;
  */
 class NewsController extends Controller
 {
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow'   => true,
+                        'roles'   => ['?']
+                    ],
+                    [
+                        'actions' => ['index', 'update', 'create', 'view', 'delete'],
+                        'allow'   => true,
+                        'roles'   => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     /**
      * Lists all News models.
      * @return mixed

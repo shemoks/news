@@ -2,6 +2,7 @@
 
 use common\models\News;
 use common\widgets\googleMap\GoogleMapWidget;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -15,40 +16,40 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="news-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create News'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?php if (!Yii::$app->user->isGuest) {
+            echo Html::a(Yii::t('app', 'Create News'), ['create'], ['class' => 'btn btn-success']);
+        } ?>
     </p>
-    <?= GridView::widget([
+    <?php
+    $columns = [
+        ['class' => 'yii\grid\SerialColumn'],
+        'title',
+        'description:ntext',
+        [
+            'attribute' => 'id_user',
+            'format'    => 'raw',
+            'value'     => function ($model) {
+                $model::setCoordinates([
+                    'lat'   => $model->latitude,
+                    'lan'   => $model->longitude,
+                    'title' => $model->title,
+                ]);
+                return $model->idUser->username;
+            }
+        ],
+        'date_begin',
+        'date_end',
+        'place',
+    ];
+    if (!Yii::$app->user->isGuest) {
+        array_push($columns, ['class' => 'yii\grid\ActionColumn']);
+    }
+    echo GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel'  => $searchModel,
-        'columns'      => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-//            'id',
-            'title',
-            'description:ntext',
-//            'created_at',
-//            'updated_at',
-            // 'is_deleted',
-            [
-                'attribute' => 'id_user',
-                'format'    => 'raw',
-                'value'     => function ($model) {
-                    $model::setCoordinates([
-                        'lat' => $model->latitude,
-                        'lan' => $model->longitude
-                    ]);
-                    return $model->idUser->username;
-                }
-            ],
-            'date_begin',
-            'date_end',
-            'place',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
+        'columns'      => $columns
     ]); ?>
 </div>
 
@@ -56,6 +57,5 @@ $this->params['breadcrumbs'][] = $this->title;
         'key'               => Yii::$app->params['googleApiKey'],
         'coordinates'       => News::getCoordinates(),
         'isGetUserLocation' => false,
-        'mapCenter' => false,
     ]
 ); ?>

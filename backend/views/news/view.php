@@ -29,13 +29,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model'      => $model,
         'attributes' => [
-            //     'id',
             'title',
             'description:ntext',
             'created_at',
             'updated_at',
-            //  'is_deleted',
-            //  'id_user',
             'date_begin',
             'date_end',
         ],
@@ -46,11 +43,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'isGetUserLocation' => false,
             'coordinates'       => [
                 [
-                    'lat' => $model->latitude,
-                    'lan' => $model->longitude,
+                    'lat'   => $model->latitude,
+                    'lan'   => $model->longitude,
+                    'title' => $model->title,
                 ]
             ],
-            'mapCenter' => true,
         ]
     ); ?>
 </div>
